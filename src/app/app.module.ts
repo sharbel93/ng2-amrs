@@ -1,4 +1,3 @@
-
 import '../styles/styles.scss';
 import { NgModule, ApplicationRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -31,30 +30,20 @@ import { SessionStorageService } from './utils/session-storage.service';
 import { CacheService } from 'ionic-cache';
 import { DataCacheService } from './shared/services/data-cache.service';
 import { FeedBackComponent } from './feedback';
-import { FormVisitTypeSearchModule } from
-    './patient-dashboard/common/form-visit-type-search/form-visit-type-search.module';
+import { FormVisitTypeSearchModule } from './patient-dashboard/common/form-visit-type-search/form-visit-type-search.module';
 import { BusyModule, BusyConfig } from 'angular2-busy';
 import { LabOrderSearchModule } from './lab-order-search/lab-order-search.module';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieModule } from 'ngx-cookie';
-<<<<<<< HEAD
 import { SeedModule } from 'angular-message-history-module';
 import { FeedBackHistoryComponent } from './message-history/messages-history.component';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
 import { MomentModule } from 'angular2-moment';
 import { MarkdownModule } from 'angular2-markdown';
-=======
 import { OnlineTrackerService } from './online-tracker/online-tracker.service';
-import {
-  DepartmentProgramsConfigService
-} from './etl-api/department-programs-config.service';
-
->>>>>>> 8c30b620ec556fff7ea269ae8f85ce38d043d0e3
+import { DepartmentProgramsConfigService } from './etl-api/department-programs-config.service';
 // Application wide providers
-const APP_PROVIDERS = [
-  ...APP_RESOLVER_PROVIDERS,
-  AppState
-];
+const APP_PROVIDERS = [...APP_RESOLVER_PROVIDERS, AppState];
 
 interface StoreType {
   state: InternalStateType;
@@ -62,9 +51,18 @@ interface StoreType {
   disposeOldHosts: () => void;
 }
 
-export function httpClient(xhrBackend: XHRBackend, requestOptions: RequestOptions,
-                           router: Router, sessionStorageService: SessionStorageService) {
-  return new HttpClient(xhrBackend, requestOptions, router, sessionStorageService);
+export function httpClient(
+  xhrBackend: XHRBackend,
+  requestOptions: RequestOptions,
+  router: Router,
+  sessionStorageService: SessionStorageService
+) {
+  return new HttpClient(
+    xhrBackend,
+    requestOptions,
+    router,
+    sessionStorageService
+  );
 }
 /**
  * `AppModule` is the main entry point into Angular2's bootstraping process
@@ -78,21 +76,21 @@ export function httpClient(xhrBackend: XHRBackend, requestOptions: RequestOption
     FeedBackComponent,
     FeedBackHistoryComponent
   ],
-  imports: [ // import Angular's modules
+  imports: [
+    // import Angular's modules
     BrowserAnimationsModule,
     FormVisitTypeSearchModule,
     CommonModule,
     CookieModule.forRoot(),
     ModalModule.forRoot(),
     NgamrsSharedModule.forRoot(),
-    BusyModule.forRoot(
-      {
-        message: 'Please Wait...',
-        backdrop: true,
-        delay: 200,
-        minDuration: 600,
-        wrapperClass: 'my-class',
-        template: `<div class="ng-busy-default-wrapper">
+    BusyModule.forRoot({
+      message: 'Please Wait...',
+      backdrop: true,
+      delay: 200,
+      minDuration: 600,
+      wrapperClass: 'my-class',
+      template: `<div class="ng-busy-default-wrapper">
             <div class="ng-busy-default-sign">
                 <div class="ng-busy-default-spinner">
                     <div class="bar1"></div>
@@ -110,16 +108,18 @@ export function httpClient(xhrBackend: XHRBackend, requestOptions: RequestOption
                 </div>
                 <div class="ng-busy-default-text">{{message}}</div>
             </div>
-        </div>`,
-      }
-    ),
+        </div>`
+    }),
     FormsModule,
     HttpModule,
     RouterModule.forRoot(ROUTES, { useHash: true, enableTracing: false }),
-    Angulartics2Module.forRoot([Angulartics2Piwik])
-    , VirtualScrollModule, MomentModule, MarkdownModule.forRoot()
+    Angulartics2Module.forRoot([Angulartics2Piwik]),
+    VirtualScrollModule,
+    MomentModule,
+    MarkdownModule.forRoot()
   ],
-  providers: [ // expose our Services and Providers into Angular's dependency injection
+  providers: [
+    // expose our Services and Providers into Angular's dependency injection
     APP_PROVIDERS,
     DynamicRoutesService,
     Angulartics2Piwik,
@@ -137,13 +137,10 @@ export function httpClient(xhrBackend: XHRBackend, requestOptions: RequestOption
     CacheService,
     DataCacheService
   ],
-  exports: [
-    LabOrderSearchModule
-  ]
+  exports: [LabOrderSearchModule]
 })
 export class AppModule {
-  constructor(public appRef: ApplicationRef, public appState: AppState) {
-  }
+  constructor(public appRef: ApplicationRef, public appState: AppState) {}
 
   public hmrOnInit(store: StoreType) {
     if (!store || !store.state) {
@@ -161,5 +158,4 @@ export class AppModule {
     delete store.state;
     delete store.restoreInputValues;
   }
-
 }

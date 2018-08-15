@@ -5,13 +5,9 @@ import { UserService } from '../openmrs-api/user.service';
 import { UserDefaultPropertiesService }
     from '../user-default-properties/user-default-properties.service';
 import { Subscription } from 'rxjs';
-<<<<<<< HEAD
-
-=======
 import * as _ from 'lodash';
 import { DepartmentProgramsConfigService
 } from '../etl-api/department-programs-config.service';
->>>>>>> 8c30b620ec556fff7ea269ae8f85ce38d043d0e3
 @Component({
     selector: 'feedback',
     templateUrl: 'feedback.component.html',
