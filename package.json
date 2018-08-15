@@ -72,6 +72,10 @@
   "dependencies": {
     "@angular/animations": "^4.0.0",
     "@angular/cdk": "2.0.0-beta.10",
+<<<<<<< HEAD
+    "@angular/cli": "^1.2.1",
+=======
+>>>>>>> 8c30b620ec556fff7ea269ae8f85ce38d043d0e3
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.0.0",
@@ -93,13 +97,17 @@
     "ag-grid-angular": "12.0.0",
     "ag-grid-enterprise": "12.0.0",
     "angular-calendar": "0.9.1",
+    "angular-message-history-module": "^1.2.3",
     "angular2-busy": "git+https://github.com/mario-siama/angular2-busy.git",
     "angular2-cookie": "^1.2.6",
     "angular2-highcharts": "^0.5.5",
     "angular2-ladda": "1.0.7",
+    "angular2-markdown": "^1.6.0",
     "angular2-materialize": "^5.2.1",
     "angular2-multiselect-dropdown": "^1.2.6",
+    "angular2-moment": "^1.7.0",
     "angular2-select": "^1.0.0-beta.3",
+    "angular2-virtual-scroll": "^0.2.2",
     "angulartics2": "^1.6.3",
     "async": "^2.6.1",
     "bardcode": "^1.0.0",

@@ -1,3 +1,4 @@
+
 import '../styles/styles.scss';
 import { NgModule, ApplicationRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -12,7 +13,6 @@ import { LoginGuard } from './shared/guards/login.guard';
 import { Angulartics2Module } from 'angulartics2';
 import { Angulartics2Piwik } from 'angulartics2/dist/providers';
 import { NgamrsSharedModule } from './shared/ngamrs-shared.module';
-
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -36,13 +36,20 @@ import { FormVisitTypeSearchModule } from
 import { BusyModule, BusyConfig } from 'angular2-busy';
 import { LabOrderSearchModule } from './lab-order-search/lab-order-search.module';
 import { ModalModule } from 'ngx-bootstrap/modal';
-
 import { CookieModule } from 'ngx-cookie';
+<<<<<<< HEAD
+import { SeedModule } from 'angular-message-history-module';
+import { FeedBackHistoryComponent } from './message-history/messages-history.component';
+import { VirtualScrollModule } from 'angular2-virtual-scroll';
+import { MomentModule } from 'angular2-moment';
+import { MarkdownModule } from 'angular2-markdown';
+=======
 import { OnlineTrackerService } from './online-tracker/online-tracker.service';
 import {
   DepartmentProgramsConfigService
 } from './etl-api/department-programs-config.service';
 
+>>>>>>> 8c30b620ec556fff7ea269ae8f85ce38d043d0e3
 // Application wide providers
 const APP_PROVIDERS = [
   ...APP_RESOLVER_PROVIDERS,
@@ -54,6 +61,7 @@ interface StoreType {
   restoreInputValues: () => void;
   disposeOldHosts: () => void;
 }
+
 export function httpClient(xhrBackend: XHRBackend, requestOptions: RequestOptions,
                            router: Router, sessionStorageService: SessionStorageService) {
   return new HttpClient(xhrBackend, requestOptions, router, sessionStorageService);
@@ -67,7 +75,8 @@ export function httpClient(xhrBackend: XHRBackend, requestOptions: RequestOption
     AppComponent,
     TitleCasePipe,
     NoContentComponent,
-    FeedBackComponent
+    FeedBackComponent,
+    FeedBackHistoryComponent
   ],
   imports: [ // import Angular's modules
     BrowserAnimationsModule,
@@ -107,7 +116,8 @@ export function httpClient(xhrBackend: XHRBackend, requestOptions: RequestOption
     FormsModule,
     HttpModule,
     RouterModule.forRoot(ROUTES, { useHash: true, enableTracing: false }),
-    Angulartics2Module.forRoot([Angulartics2Piwik]),
+    Angulartics2Module.forRoot([Angulartics2Piwik])
+    , VirtualScrollModule, MomentModule, MarkdownModule.forRoot()
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
     APP_PROVIDERS,
