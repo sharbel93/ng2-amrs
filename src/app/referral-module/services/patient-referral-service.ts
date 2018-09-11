@@ -33,10 +33,6 @@ export class PatientReferralService {
       let enrollPayload = this.programService.createEnrollmentPayload(
         programUuid, patient, this.toOpenmrsDateFormat(new Date()), null,
         location, enrollmentUuid);
-      _.merge(enrollPayload, {'states': [{
-        'state': state.uuid,
-        'startDate': this.toOpenmrsDateFormat(new Date())
-      }]});
       return this.programService.saveUpdateProgramEnrollment(enrollPayload);
   }
 
@@ -113,7 +109,8 @@ export class PatientReferralService {
 
   public getProviderReferralPatientList(params: any) {
     let referralInfo: BehaviorSubject<any> = new BehaviorSubject<any>([]);
-    let referralObservable = this.patientReferralResourceService.getPatientReferralPatientList({
+    let referralObservable = this.patientReferralResourceService
+      .getPatientReferralPatientList({
       endDate: params.endDate,
       locationUuids: params.locationUuids,
       startDate: params.startDate,

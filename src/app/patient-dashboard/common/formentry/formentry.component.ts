@@ -40,6 +40,10 @@ import { ProgramsTransferCareService } from '../../programs/transfer-care/transf
 import { ConceptResourceService } from '../../../openmrs-api/concept-resource.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { PatientReferralService } from '../../../referral-module/services/patient-referral-service';
+import { EncounterType } from '../../../models/encounter-type.model';
+import { RetrospectiveDataEntryService
+} from '../../../retrospective-data-entry/services/retrospective-data-entry.service';
+import { PersonResourceService } from '../../../openmrs-api/person-resource.service';
 
 @Component({
   selector: 'app-formentry',
@@ -87,6 +91,7 @@ export class FormentryComponent implements OnInit, OnDestroy {
               private formFactory: FormFactory,
               private encounterResource: EncounterResourceService,
               private encounterAdapter: EncounterAdapter,
+              private retrospectiveDataEntryService: RetrospectiveDataEntryService,
               private userDefaultPropertiesService: UserDefaultPropertiesService,
               private userService: UserService,
               private formSubmissionService: FormSubmissionService,
@@ -104,7 +109,8 @@ export class FormentryComponent implements OnInit, OnDestroy {
               private formentryHelperService: FormentryHelperService,
               private patientReminderService: PatientReminderService,
               private transferCareService: ProgramsTransferCareService,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private personResourceService: PersonResourceService) {
   }
 
   public ngOnInit() {
@@ -184,8 +190,8 @@ export class FormentryComponent implements OnInit, OnDestroy {
         document.body.scrollTop = 0;
       }
     }, 100);
-    // console.log('FORM MODEL:', this.form.rootNode.control);
     const isSaving = this.formSubmissionService.getSubmitStatus();
+
     if (!isSaving) {
       this.submitForm();
     }
@@ -287,33 +293,45 @@ export class FormentryComponent implements OnInit, OnDestroy {
   }
 
   public loadDefaultValues(): void {
-
     let location = this.userDefaultPropertiesService.getCurrentUserDefaultLocationObject();
     let currentUser = this.userService.getLoggedInUser();
     let currentDate = moment().format();
+    // let retroSettings = this.retrospectiveDataEntryService.retroSettings.value;
+    this.retrospectiveDataEntryService.retroSettings.subscribe((retroSettings) => {
+      if (retroSettings && retroSettings.enabled) {
+        location = {
+          uuid: retroSettings.location.value,
+          display: retroSettings.location.label
+        };
+        currentDate = moment(this.setRetroDateTime(retroSettings)).format();
+      }
 
-    let encounterDate = this.form.searchNodeByQuestionId('encDate');
-    if (encounterDate.length > 0) {
-      encounterDate[0].control.setValue(currentDate);
-    }
+      let encounterDate = this.form.searchNodeByQuestionId('encDate');
+      if (encounterDate.length > 0) {
+        encounterDate[0].control.setValue(currentDate);
+      }
 
-    let encounterLocation = this.form.searchNodeByQuestionId('location',
-      'encounterLocation');
-    if (encounterLocation.length > 0 && location) {
-      this.encounterLocation = { value: location.uuid, label: location.display };
-      encounterLocation[0].control.setValue(location.uuid);
-    }
+      let encounterLocation = this.form.searchNodeByQuestionId('location',
+        'encounterLocation');
+      if (encounterLocation.length > 0 && location) {
+        this.encounterLocation = { value: location.uuid, label: location.display };
+        encounterLocation[0].control.setValue(location.uuid);
+      }
 
-    let encounterProvider = this.form.searchNodeByQuestionId('provider',
-      'encounterProvider');
-    if (encounterProvider.length > 0 &&
-      this.compiledSchemaWithEncounter &&
-      this.compiledSchemaWithEncounter.provider !== {}) {
-      encounterProvider[0].control.setValue(this.compiledSchemaWithEncounter.provider.uuid);
-    }
+      let encounterProvider = this.form.searchNodeByQuestionId('provider',
+        'encounterProvider');
+      if (encounterProvider.length > 0 &&
+        this.compiledSchemaWithEncounter &&
+        this.compiledSchemaWithEncounter.provider !== {}) {
+        let provider = this.compiledSchemaWithEncounter.provider.uuid;
+        if (retroSettings && retroSettings.enabled) {
+          provider = retroSettings.provider.value;
+        }
+        encounterProvider[0].control.setValue(provider);
+      }
+    });
 
     this.autoSelectReferPatientStateIfReferring();
-
   }
 
   public autoSelectReferPatientStateIfReferring() {
@@ -379,12 +397,59 @@ export class FormentryComponent implements OnInit, OnDestroy {
     }
   }
 
+  public updatePatientDemographics(data: any): void {
+    // check if patient status was filled
+    // (questionId is patstat in Outreach Field Follow-Up Form V1.0)
+    let patientCareStatus = this.form.searchNodeByQuestionId('patstat');
+    let deathDate = this.form.searchNodeByQuestionId('deathDate');
+    let causeOfDeath = this.form.searchNodeByQuestionId('reasdeath');
+    if (causeOfDeath.length === 0 ) {
+      causeOfDeath = this.form.searchNodeByQuestionId('deathCause');
+    }
+
+    // if question exists provide for demographic update
+    /* UPDATE: at the moment, only deathDate  and cause are the only consistent concepts across
+     *  the forms.
+     *  none of the fields are required. By assumption, if someone fills death death and cause,
+     *  the patient is dead
+     */
+
+    if (patientCareStatus.length > 0
+      && _.first(patientCareStatus).control.value !== 'a89335d6-1350-11df-a1f1-0026b9') {
+      this.personResourceService.saveUpdatePerson(this.patient.uuid, {
+        dead : false,
+        deathDate: null,
+        causeOfDeath: null
+      }).subscribe(() => {
+
+        });
+    }
+
+    if ((causeOfDeath.length > 0 && _.first(causeOfDeath).control.value.length > 0)
+      && (deathDate.length > 0 && _.first(deathDate).control.value.length > 0)) {
+        let personNamePayload = {
+          dead: true,
+          deathDate: _.first(deathDate).control.value,
+          causeOfDeath: _.first(causeOfDeath).control.value
+        };
+
+        this.personResourceService.saveUpdatePerson(this.patient.uuid, personNamePayload)
+          .subscribe(() => {
+
+        });
+    }
+  }
+
   private searchReferralConcepts(concepts) {
     let searchBatch: Array<Observable<any>> = [];
     _.each(concepts, (concept: any) => {
         searchBatch.push(this.conceptResourceService.getConceptByUuid(concept));
     });
     return Observable.forkJoin(searchBatch);
+  }
+
+  private setRetroDateTime(settings) {
+    return new Date(settings.visitDate + ', ' + settings.visitTime);
   }
 
   private loadDraftedForm() {
@@ -682,11 +747,13 @@ export class FormentryComponent implements OnInit, OnDestroy {
       this.submittedOrders.encounterUuid = null;
       this.submittedOrders.orders = [];
       // submit form
-      if (this.encounterUuid) {
-          this.saveEncounterOrUpdate(payloadTypes);
-      }else {
-        this.checkDuplicate(payloadTypes);
+      let retroSettings = this.retrospectiveDataEntryService.retroSettings.value;
+      if (retroSettings && retroSettings.enabled) {
+        this.confirmRetrospectiveSubmission(payloadTypes);
+      } else {
+        this.saveEncounterOrUpdateOnCheckDuplicate(payloadTypes);
       }
+
     } else {
 
       // document.getElementById('formentry-submit-btn').setAttribute('disabled', 'true');
@@ -834,7 +901,7 @@ export class FormentryComponent implements OnInit, OnDestroy {
     this.formSubmissionErrors = null;
     this.failedPayloadTypes = null;
     // this.showSuccessDialog = true;
-
+    this.updatePatientDemographics(response);
     // handle referrals here
     this.handleFormReferrals(response);
   }
@@ -932,7 +999,14 @@ export class FormentryComponent implements OnInit, OnDestroy {
     request
       .subscribe(
         (data) => {
-          this.form.valueProcessingInfo.providerUuid = data.providerUuid;
+          this.retrospectiveDataEntryService.retroSettings.subscribe((retroSettings) => {
+            let provider = data.providerUuid;
+            if (retroSettings && retroSettings.enabled) {
+              provider = retroSettings.provider.value;
+            }
+            this.form.valueProcessingInfo.providerUuid = provider;
+          });
+
         },
         (error) => {
           console.warn('Provider not found. Are you a provider?');
@@ -948,6 +1022,32 @@ export class FormentryComponent implements OnInit, OnDestroy {
       personUuid = encounterProvider[0].control.value;
     }
     return this.formDataSourceService.getProviderByUuid(personUuid);
+  }
+
+  private confirmRetrospectiveSubmission(payloadTypes): void {
+    this.confirmationService.confirm({
+      header: 'Retrospective Form Submission',
+      message: 'This form is going to be submitted retrospectively. ' +
+      'Are you sure you wish to proceed?',
+      rejectVisible: true,
+      acceptVisible: true,
+      accept: () => {
+        this.saveEncounterOrUpdateOnCheckDuplicate(payloadTypes);
+      },
+      reject: () => {
+        this.isBusyIndicator(false); // hide busy indicator
+        this.formSubmissionService.setSubmitStatus(false);
+        this.enableSubmitBtn();
+      }
+    });
+  }
+
+  private saveEncounterOrUpdateOnCheckDuplicate(payloadTypes) {
+    if (this.encounterUuid) {
+      this.saveEncounterOrUpdate(payloadTypes);
+    } else {
+      this.checkDuplicate(payloadTypes);
+    }
   }
 
 }
