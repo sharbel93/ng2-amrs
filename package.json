@@ -137,7 +137,7 @@
     "ngx-file-uploader": "git+https://github.com/enyachoke/ngx-file-uploader.git#0.0.9",
     "ngx-mydatepicker": "^0.1.0",
     "ngx-toastr": "^4.1.1",
-    "npm": "^6.3.0",
+    "npm": "^6.4.1",
     "pdfjs-dist": "^1.7.308",
     "pdfkit": "^0.8.0",
     "pdfmake": "0.1.25",
