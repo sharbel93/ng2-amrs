@@ -23,7 +23,7 @@ public formatMsg(msgs: any[]) {
          // phone
           const m = msg.text.split('\n', 4);
           const p = m.slice(2, 3);
-          const j = p.map((item: any)=> item.replace(' *Phone:* ', ''));
+          const j = p.map((item: any) => item.replace(' *Phone:* ', ''));
 
          // location
           const l = m.slice(1, 2);

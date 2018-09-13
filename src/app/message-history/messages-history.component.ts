@@ -102,10 +102,10 @@ export class FeedBackHistoryComponent implements OnInit, OnChanges {
     protected refresh() {
         this._service.getMessagesFeedbackList().subscribe( (res) => {this.getFeedBack(); });
     }
-    //
-    // protected refreshTimeout() {
-    //     this.loading = true;
-    //     this.d = setTimeout(() => {
+
+    //  protected refreshTimeout() {
+    //      this.loading = true;
+    //      this.d = setTimeout(() => {
     //         this.refresh();
     //     }, 100);
     //     setTimeout(() => { this.loading = false; }, 4000 );
