@@ -35,7 +35,7 @@ import { BusyModule, BusyConfig } from 'angular2-busy';
 import { LabOrderSearchModule } from './lab-order-search/lab-order-search.module';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieModule } from 'ngx-cookie';
-import { SeedModule } from 'angular-message-history-module';
+// import { SeedModule } from 'angular-message-history-module';
 import { FeedBackHistoryComponent } from './message-history/messages-history.component';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
 import { MomentModule } from 'angular2-moment';
