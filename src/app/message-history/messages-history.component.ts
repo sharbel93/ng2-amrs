@@ -42,7 +42,7 @@ export class FeedBackHistoryComponent implements OnInit, OnChanges {
     @Input()
     protected items: MsgSlack[];
     protected scrollItems: MsgSlack[];
-
+    protected d: any;
     protected indices: ChangeEvent;
     protected buffer: MsgSlack[] = [];
     protected readonly bufferSize: number = 10;
@@ -93,8 +93,11 @@ export class FeedBackHistoryComponent implements OnInit, OnChanges {
     public getFeedBack() {
         this._service.getMessagesFeedbackList()
             .subscribe( (res) => {
+
                     this.scrollItems = this._service.formatMsg(res.messages);
-                    console.log('data', this.scrollItems);
+                    console.log('data', res);
+                    console.log('data1', this.scrollItems);
+
                 }
             );
     }
@@ -103,13 +106,13 @@ export class FeedBackHistoryComponent implements OnInit, OnChanges {
         this._service.getMessagesFeedbackList().subscribe( (res) => {this.getFeedBack(); });
     }
 
-    //  protected refreshTimeout() {
-    //      this.loading = true;
-    //      this.d = setTimeout(() => {
-    //         this.refresh();
-    //     }, 100);
-    //     setTimeout(() => { this.loading = false; }, 4000 );
-    // }
+     protected refreshTimeout() {
+         this.loading = true;
+         this.d = setTimeout(() => {
+            this.refresh();
+        }, 100);
+         setTimeout(() => { this.loading = false; }, 4000 );
+    }
 }
 
 export interface MsgSlack {
